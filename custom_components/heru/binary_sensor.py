@@ -27,8 +27,7 @@ async def async_setup_entry(
     for sensor in HERU_BINARY_SENSORS:
         binary_sensors.append(HeruBinarySensor(coordinator, sensor, entry))
 
-    if binary_sensors:
-        async_add_devices(binary_sensors)
+    async_add_devices(binary_sensors)
 
 
 class HeruBinarySensor(HeruEntity, BinarySensorEntity):
@@ -39,7 +38,6 @@ class HeruBinarySensor(HeruEntity, BinarySensorEntity):
         super().__init__(coordinator, idx, config_entry)
         self.coordinator = coordinator
         self.idx = idx
-        self.name = self.idx["name"]
         self.modbus_address = self.idx["modbus_address"]
         self.register_type = self.idx["register_type"]
         self._attr_device_class = self.idx.get("device_class", None)
@@ -49,6 +47,8 @@ class HeruBinarySensor(HeruEntity, BinarySensorEntity):
     def _get_value(self):
         """Get the value from the coordinator"""
         value = self.coordinator.get_register(self.modbus_address)
+        if value is None:
+            return None
         return bool(value)
 
     @callback

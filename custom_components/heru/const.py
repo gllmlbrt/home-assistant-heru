@@ -35,8 +35,8 @@ NUMBER = Platform.NUMBER
 SELECT = Platform.SELECT
 CLIMATE = Platform.CLIMATE
 BINARY_SENSOR = Platform.BINARY_SENSOR
-PLATFORMS = [SENSOR, SWITCH, BUTTON, CLIMATE, NUMBER, BINARY_SENSOR]
-# PLATFORMS = [SWITCH, SENSOR, BUTTON, NUMBER, SELECT]
+FAN = Platform.FAN
+PLATFORMS = [SENSOR, SWITCH, BUTTON, CLIMATE, NUMBER, BINARY_SENSOR, FAN]
 
 # Modbus
 DEFAULT_SLAVE = 1
@@ -231,28 +231,6 @@ HERU_SENSORS = [
         "register_type": INPUT_REGISTERS,
     },
     {
-        "name": "Filter timer alarm",
-        "modbus_address": "1x00025",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Exhaust fan alarm",
-        "modbus_address": "1x00022",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
         "name": "Boost input",
         "modbus_address": "1x00002",
         "scale": None,
@@ -272,39 +250,6 @@ HERU_SENSORS = [
         "device_class": None,
         "state_class": None,
         "entity_category": None,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Fire alarm",
-        "modbus_address": "1x00010",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Rotor alarm",
-        "modbus_address": "1x00011",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Supply fan alarm",
-        "modbus_address": "1x00021",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
         "register_type": DISCRETE_INPUTS,
     },
     {
@@ -343,39 +288,6 @@ HERU_SENSORS = [
         "register_type": INPUT_REGISTERS,
     },
     {
-        "name": "Startup 1st phase",
-        "modbus_address": "1x00028",
-        "scale": None,
-        "icon": ICON_START,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Startup 2nd phase",
-        "modbus_address": "1x00029",
-        "scale": None,
-        "icon": ICON_START,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
-        "name": "Cooling alarm",
-        "modbus_address": "1x00032",
-        "scale": None,
-        "icon": ICON_ALARM,
-        "unit_of_measurement": None,
-        "device_class": None,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-        "register_type": DISCRETE_INPUTS,
-    },
-    {
         "name": "Temperature regulation mode",
         "modbus_address": "4x00012",
         "scale": None,
@@ -387,18 +299,119 @@ HERU_SENSORS = [
         "register_type": HOLDING_REGISTERS,
         "options": ["Supply", "Exhaust", "Room"],
     },
+    {
+        "name": "Device weekday",
+        "modbus_address": "4x00060",
+        "scale": None,
+        "icon": ICON_CALENDAR,
+        "unit_of_measurement": None,
+        "device_class": SensorDeviceClass.ENUM,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": HOLDING_REGISTERS,
+        "options": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    },
+    {
+        "name": "Device hour",
+        "modbus_address": "4x00061",
+        "scale": 1,
+        "icon": ICON_TIME_SYNC,
+        "unit_of_measurement": None,
+        "device_class": None,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": HOLDING_REGISTERS,
+    },
+    {
+        "name": "Device minute",
+        "modbus_address": "4x00062",
+        "scale": 1,
+        "icon": ICON_TIME_SYNC,
+        "unit_of_measurement": None,
+        "device_class": None,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": HOLDING_REGISTERS,
+    },
+    {
+        "name": "Device second",
+        "modbus_address": "4x00063",
+        "scale": 1,
+        "icon": ICON_TIME_SYNC,
+        "unit_of_measurement": None,
+        "device_class": None,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": HOLDING_REGISTERS,
+    },
 ]
 
 
 HERU_BINARY_SENSORS = [
-    #     {
-    #     "name": "NAME",
-    #     "modbus_address": "9x99999",
-    #     "icon": ICON,
-    #     "device_class": BinarySensorDeviceClass.RUNNING,
-    #     "entity_category": EntityCategory.DIAGNOSTIC,
-    #     "register_type": DISCRETE_INPUTS,
-    # },
+    {
+        "name": "Filter timer alarm",
+        "modbus_address": "1x00025",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Exhaust fan alarm",
+        "modbus_address": "1x00022",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Fire alarm",
+        "modbus_address": "1x00010",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Rotor alarm",
+        "modbus_address": "1x00011",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Supply fan alarm",
+        "modbus_address": "1x00021",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Cooling alarm",
+        "modbus_address": "1x00032",
+        "icon": ICON_ALARM,
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Startup 1st phase",
+        "modbus_address": "1x00028",
+        "icon": ICON_START,
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
+    {
+        "name": "Startup 2nd phase",
+        "modbus_address": "1x00029",
+        "icon": ICON_START,
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "register_type": DISCRETE_INPUTS,
+    },
 ]
 
 
@@ -438,6 +451,24 @@ HERU_NUMBERS = [
         "max_value": 40,
         "icon": ICON_THERMOMETER,
         "unit_of_measurement": "°C",
+    },
+    {
+        "name": "Supply fan user speed",
+        "modbus_address": "4x00007",
+        "scale": 1,
+        "min_value": 0,
+        "max_value": 4,
+        "icon": ICON_FAN,
+        "unit_of_measurement": None,
+    },
+    {
+        "name": "Exhaust fan user speed",
+        "modbus_address": "4x00008",
+        "scale": 1,
+        "min_value": 0,
+        "max_value": 4,
+        "icon": ICON_FAN,
+        "unit_of_measurement": None,
     },
 ]
 
@@ -521,5 +552,13 @@ HERU_CLIMATES = [
         "name": "Comfort",
         "modbus_address": "4x00002",
         "icon": ICON_THERMOSTAT,
+    }
+]
+
+HERU_FANS = [
+    {
+        "name": "Ventilation",
+        "modbus_address": "4x00006",
+        "icon": ICON_FAN,
     }
 ]

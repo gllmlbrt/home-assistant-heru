@@ -83,6 +83,8 @@ class HeruSensor(HeruEntity, SensorEntity):
             else:
                 return STATE_ON
         if self.idx["register_type"] == DISCRETE_INPUTS:
+            if value is None:
+                return None
             if value is False:
                 return STATE_OFF
             else:
@@ -90,6 +92,12 @@ class HeruSensor(HeruEntity, SensorEntity):
         if self.idx["register_type"] == HOLDING_REGISTERS:
             if self._attr_device_class == SensorDeviceClass.ENUM:
                 return self._attr_options[value]
+            scale = self.idx.get("scale")
+            if scale is not None:
+                scaled_value = value * scale
+                if "precision" in self.idx and self.idx["precision"] is not None:
+                    return round(scaled_value, self.idx["precision"])
+                return scaled_value
             raise TypeError(f"Unsupported register type for sensor: {self.idx['name']}")
 
     @callback

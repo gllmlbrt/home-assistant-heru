@@ -29,30 +29,27 @@ async def async_setup_entry(hass: HomeAssistant, entry, async_add_devices):
 class HeruNumber(HeruEntity, NumberEntity):
     """HERU number class."""
 
-    _attr_device_class = NumberDeviceClass.TEMPERATURE
-
     def __init__(self, coordinator: CoordinatorEntity, idx, config_entry):
         _LOGGER.debug("HeruNumber.__init__()")
         super().__init__(coordinator, idx, config_entry)
         self.coordinator = coordinator
         self.modbus_address = self.idx["modbus_address"]
         self.scale = self.idx["scale"]
-        self._attr_native_value = 0
         self._attr_native_step = 1
         self._attr_native_min_value = idx["min_value"]
         self._attr_native_max_value = idx["max_value"]
         self._attr_native_unit_of_measurement = self.idx["unit_of_measurement"]
-        self._attr_native_value = (
-            self.coordinator.get_register(self.modbus_address) * self.scale
-        )
+        if self.idx["unit_of_measurement"] == "°C":
+            self._attr_device_class = NumberDeviceClass.TEMPERATURE
+        raw = self.coordinator.get_register(self.modbus_address)
+        self._attr_native_value = raw * self.scale if raw is not None else None
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         _LOGGER.debug("HeruNumber._handle_coordinator_update()")
-        self._attr_native_value = (
-            self.coordinator.get_register(self.modbus_address) * self.scale
-        )
+        raw = self.coordinator.get_register(self.modbus_address)
+        self._attr_native_value = raw * self.scale if raw is not None else None
         _LOGGER.debug(
             "%s: %s %s",
             self._attr_name,
