@@ -98,7 +98,7 @@ class HeruSensor(HeruEntity, SensorEntity):
                 if "precision" in self.idx and self.idx["precision"] is not None:
                     return round(scaled_value, self.idx["precision"])
                 return scaled_value
-            raise TypeError(f"Unsupported register type for sensor: {self.idx['name']}")
+            return value
 
     @callback
     def _handle_coordinator_update(self) -> None:

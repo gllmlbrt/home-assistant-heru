@@ -108,6 +108,8 @@ class HeruThermostat(HeruEntity, ClimateEntity):
         heating = self.coordinator.get_register("3x00029")
         cooling = self.coordinator.get_register("3x00031")
         power = self.coordinator.get_register("0x00001")
+        if power is None:
+            return None
         if not power:
             return HVACAction.OFF
         if heating and heating > 0:
@@ -118,6 +120,8 @@ class HeruThermostat(HeruEntity, ClimateEntity):
 
     def _get_hvac_mode(self):
         power = self.coordinator.get_register("0x00001")
+        if power is None:
+            return None
         if not power:
             return HVACMode.OFF
         heating = self.coordinator.get_register("3x00029")

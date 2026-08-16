@@ -17,7 +17,8 @@ from .entity import HeruEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-# Fan step range: 0 (off) to 4 (maximum)
+# Fan step range: 1 (minimum) to 4 (maximum) for percentage mapping.
+# Step 0 means off and is handled separately.
 SPEED_RANGE = (1, 4)
 
 
