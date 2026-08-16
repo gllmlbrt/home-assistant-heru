@@ -61,9 +61,10 @@ class HeruButtonSetTime(HeruButton):
         _LOGGER.debug("HeruButtonSetTime.async_press()")
 
         now = hass_now()
-        await self.coordinator.write_register_by_address("4x00400", now.year)
-        await self.coordinator.write_register_by_address("4x00401", now.month)
-        await self.coordinator.write_register_by_address("4x00402", now.day)
-        await self.coordinator.write_register_by_address("4x00403", now.hour)
-        await self.coordinator.write_register_by_address("4x00404", now.minute)
-        await self.coordinator.write_register_by_address("4x00405", now.second)
+        # Write weekday/hour/minute into the read/write buffer, then write
+        # seconds last to commit the buffer to the unit's clock.
+        # 0 = Monday ... 6 = Sunday, matching Python's date.weekday().
+        await self.coordinator.write_register_by_address("4x00060", now.weekday())
+        await self.coordinator.write_register_by_address("4x00061", now.hour)
+        await self.coordinator.write_register_by_address("4x00062", now.minute)
+        await self.coordinator.write_register_by_address("4x00063", now.second)

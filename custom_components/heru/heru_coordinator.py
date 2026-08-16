@@ -55,36 +55,30 @@ class HeruCoordinator(DataUpdateCoordinator):
                     await self.client.connect()
 
                 # Read coils efficiently - group consecutive addresses
-                # 0x00001 - 0x00007 (addresses 0-6)
-                coils_result = await self.client.read_coils(0, count=7, device_id=DEFAULT_SLAVE)
+                # 0x00001 - 0x00006 (addresses 0-5)
+                coils_result = await self.client.read_coils(0, count=6, device_id=DEFAULT_SLAVE)
                 for i, bit in enumerate(coils_result.bits):
                     coil_address = f"0x{str(i + 1).zfill(5)}"
                     self._coils[coil_address] = bit
 
                 # Read discrete inputs efficiently - group consecutive addresses
-                # 1x00001 - 1x00054 (addresses 0-53)
+                # 1x00001 - 1x00034 (addresses 0-33) - valid range for HERU 62-250
                 discrete_inputs_result = await self.client.read_discrete_inputs(
-                    0, count=54, device_id=DEFAULT_SLAVE
+                    0, count=34, device_id=DEFAULT_SLAVE
                 )
                 for i, bit in enumerate(discrete_inputs_result.bits):
                     discrete_address = f"1x{str(i + 1).zfill(5)}"
                     self._discrete_inputs[discrete_address] = bit
 
                 # Read input registers efficiently - group consecutive addresses
-                # 3x00001 - 3x00034 (addresses 0-33) - valid range
-                result = await self.client.read_input_registers(0, count=34, device_id=DEFAULT_SLAVE)
+                # 3x00001 - 3x00033 (addresses 0-32) - valid range for HERU 62-250
+                result = await self.client.read_input_registers(0, count=33, device_id=DEFAULT_SLAVE)
                 for i, register in enumerate(result.registers):
                     input_address = f"3x{str(i + 1).zfill(5)}"
                     self._input_registers[input_address] = register
 
-                # 3x00041 - 3x00046 (addresses 40-45) - valid range
-                result = await self.client.read_input_registers(40, count=6, device_id=DEFAULT_SLAVE)
-                for i, register in enumerate(result.registers):
-                    input_address = f"3x{str(40 + i + 1).zfill(5)}"
-                    self._input_registers[input_address] = register
-
                 # Read holding registers efficiently - group consecutive addresses
-                # 4x00001 - 4x00067 (addresses 0-68)
+                # 4x00001 - 4x00069 (addresses 0-68)
                 holding_registers_result = await self.client.read_holding_registers(
                     0, count=69, device_id=DEFAULT_SLAVE
                 )
