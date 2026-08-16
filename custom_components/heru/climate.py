@@ -59,7 +59,7 @@ class HeruThermostat(HeruEntity, ClimateEntity):
         self._attr_min_temp = 15
         self._attr_max_temp = self._get_max_temp()
         self._attr_target_temperature_step = 1
-        self._attr_hvac_modes = [HVACMode.HEAT, HVACMode.OFF]
+        self._attr_hvac_modes = [HVACMode.HEAT, HVACMode.FAN_ONLY, HVACMode.OFF]
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._enable_turn_on_off_backwards_compatibility = False
         self._attr_supported_features = (
@@ -92,25 +92,42 @@ class HeruThermostat(HeruEntity, ClimateEntity):
 
     def _get_target_temperature(self):
         """Get the value from the coordinator"""
-        return self.coordinator.get_register(self.modbus_address)
+        value = self.coordinator.get_register(self.modbus_address)
+        if value is None:
+            return None
+        return value
 
     def _get_max_temp(self):
         """Get the max temperature from the coordinator"""
-        return self.coordinator.get_register("4x00048")
+        value = self.coordinator.get_register("4x00048")
+        if value is None or value == 0:
+            return 30
+        return value
 
     def _get_hvac_action(self):
-        action = self.coordinator.get_register("3x00029")
-        if action == 0:
-            return HVACAction.FAN
-        else:
+        heating = self.coordinator.get_register("3x00029")
+        cooling = self.coordinator.get_register("3x00031")
+        power = self.coordinator.get_register("0x00001")
+        if power is None:
+            return None
+        if not power:
+            return HVACAction.OFF
+        if heating and heating > 0:
             return HVACAction.HEATING
+        if cooling and cooling > 0:
+            return HVACAction.COOLING
+        return HVACAction.FAN
 
     def _get_hvac_mode(self):
-        action = self.coordinator.get_register("0x00001")
-        if action == False:
+        power = self.coordinator.get_register("0x00001")
+        if power is None:
+            return None
+        if not power:
             return HVACMode.OFF
-        else:
+        heating = self.coordinator.get_register("3x00029")
+        if heating and heating > 0:
             return HVACMode.HEAT
+        return HVACMode.FAN_ONLY
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -123,7 +140,7 @@ class HeruThermostat(HeruEntity, ClimateEntity):
         self._attr_hvac_mode = self._get_hvac_mode()
 
         _LOGGER.debug(
-            "%s: %f %f",
+            "%s: %s %s",
             self._attr_name,
             self._attr_current_temperature,
             self._attr_target_temperature,
@@ -137,7 +154,7 @@ class HeruThermostat(HeruEntity, ClimateEntity):
             "Mode: %s",
             hvac_mode,
         )
-        if hvac_mode == HVACMode.HEAT:
+        if hvac_mode in (HVACMode.HEAT, HVACMode.FAN_ONLY):
             await self.coordinator.write_coil_by_address("0x00001", True)
         elif hvac_mode == HVACMode.OFF:
             await self.coordinator.write_coil_by_address("0x00001", False)
@@ -146,7 +163,8 @@ class HeruThermostat(HeruEntity, ClimateEntity):
     async def async_turn_on(self):
         """Turn the entity on."""
         _LOGGER.debug("Turn on")
-        await self.async_set_hvac_mode(HVACMode.HEAT)
+        await self.coordinator.write_coil_by_address("0x00001", True)
+        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self):
         """Turn the entity off."""

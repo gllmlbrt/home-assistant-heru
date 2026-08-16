@@ -45,7 +45,10 @@ class HeruSwitch(HeruEntity, SwitchEntity):
 
     def _get_value(self):
         """Get the value from the coordinator"""
-        return self.coordinator.get_register(self.modbus_address)
+        value = self.coordinator.get_register(self.modbus_address)
+        if value is None:
+            return None
+        return bool(value)
 
     @callback
     def _handle_coordinator_update(self) -> None:
