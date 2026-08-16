@@ -16,13 +16,13 @@ Control and monitor your Östberg HERU energy recovery unit from Home Assistant 
 </p>
 
 
-*__Note__: The integration requires HERU firmware version 1.09i or newer. Version 1.09i introduced one decimal to temperature sensors, and therefore needs to be scaled. The integration has been verified with HERU firmware version 1.14.*
+*__Note__: This integration targets the HERU 62-250 (Gen 3) Modbus register map, see [`assets/Modbus_Registers_HERU_62_250_v07.pdf`](assets/Modbus_Registers_HERU_62_250_v07.pdf). It is not compatible with the newer IQC controller generation, which uses a different register layout.*
 
 ### Sensors
 | Sensor  | Modbus register |
 | ------------- | ------------- |
 |Boost input|1x00002|
-|Changeover active|3x00034|
+|Cooling alarm|1x00032|
 |Current cooling power|3x00031|
 |Current exhaust fan control voltage|3x00033|
 |Current exhaust fan power|3x00026|
@@ -42,12 +42,8 @@ Control and monitor your Östberg HERU energy recovery unit from Home Assistant 
 |Fire alarm|1x00010|
 |Heat recovery temperature|3x00007|
 |Last seen|_Calculated_|
-|Night cooling active|1x00038|
 |Outdoor temperature | 3x00002  |
 |Overpressure input|1x00003|
-|Quality sensor 1[^1]|3x00042|
-|Quality sensor 2[^1]|3x00044|
-|Quality sensor 3[^1]|3x00046|
 |Recycle efficiency|_Calculated_|
 |Room temperature (default disabled)|3x00008|
 |Rotor alarm|1x00011|
@@ -58,14 +54,12 @@ Control and monitor your Östberg HERU energy recovery unit from Home Assistant 
 |Supply fan alarm|1x00021|
 |Temperature regulation mode|4x00012|
 
-[^1]: When a physical quality sensors is installed in the HERU, the Home Assistant component must be reloaded to allow the sensors unit of measurements to be reset.
-
 ### Buttons
 | Button  | Modbus register |
 | ------------- | ------------- |
 | Clear Alarms |0x00005|
 |Reset filter timer|0x00006|
-|Sync date and time|4x00400 - 4x00405|
+|Sync date and time|4x00060 - 4x00063|
 
 
 ### Switches
@@ -73,18 +67,19 @@ Control and monitor your Östberg HERU energy recovery unit from Home Assistant 
 | ------------- | ------------- |
 |Away mode|0x00004|
 |Boost mode|0x00003|
-|Heater enabled|4x00067|
-|Night cooling enabled|4x00019|
+|Cooler connected|4x00052|
+|Electric heater connected|4x00051|
+|Night cooling enabled|4x00016|
 |Overpressure mode|0x00002|
 |Power|0x00001|
-|Preheater enabled|4x00064|
+|Water heater connected|4x00050|
 
 ### Numbers
 | Number  | Modbus register |
 | ------------- | ------------- |
-|Night cooling exhaust high limit|4x00021|
-|Night cooling exhaust low limit|4x00022|
-|Night cooling indoor-outdoor diff. limit|4x00020|
+|Night cooling exhaust high limit|4x00015|
+|Night cooling exhaust low limit|4x00014|
+|Night cooling indoor-outdoor diff. limit|4x00013|
 
 ## Installation
 
